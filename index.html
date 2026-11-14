@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trade Journal</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--panel2:#18263d;--text:#eef4ff;--muted:#9eb0ca;--line:#263752;--accent:#61d5a4;--blue:#72a7ff;--red:#ff788b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{padding:22px 18px 12px;max-width:900px;margin:auto}h1{font-size:25px;margin:0 0 5px}p{color:var(--muted);margin:0}
+nav{display:flex;gap:8px;padding:0 16px 14px;max-width:900px;margin:auto}
+nav button{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:12px 6px;border-radius:12px;font-weight:600}
+nav button.active{background:var(--accent);color:#062016;border-color:var(--accent)}
+main{max-width:900px;margin:auto;padding:0 14px 40px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:13px}
+h2{font-size:18px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:16px}
+textarea{min-height:75px;resize:vertical}
+.checkrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.checkrow:last-child{border:0}.checkrow span{font-size:15px}
+.pills{display:flex;gap:6px}.pills button{min-width:54px;padding:9px 10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:9px}.pills button.sel{background:var(--accent);color:#062016;border-color:var(--accent);font-weight:700}
+.actions{display:flex;gap:10px;margin:14px 0}.primary,.secondary,.danger{border:0;border-radius:12px;padding:14px;font-weight:700;font-size:16px;flex:1}.primary{background:var(--accent);color:#062016}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.danger{background:#44202b;color:#ffb8c4}
+.small{font-size:12px;color:var(--muted)}.statgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:var(--panel2);border-radius:12px;padding:14px}.stat b{font-size:22px;display:block;margin-top:5px}
+.record{border:1px solid var(--line);background:var(--panel);padding:13px;border-radius:13px;margin-bottom:10px}
+.recordtop{display:flex;justify-content:space-between;gap:10px}.record h3{margin:0 0 5px;font-size:17px}.record p{font-size:13px;line-height:1.5}.record button{margin-top:10px}
+.hidden{display:none!important}.empty{text-align:center;color:var(--muted);padding:25px}
+@media(min-width:650px){.statgrid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>📊 Trade Journal</h1><p>Record your setup. Review your decisions.</p></header>
+<nav><button class="active" data-tab="new">＋ New Trade</button><button data-tab="history">▤ History</button><button data-tab="summary">◫ Summary</button></nav>
+<main>
+<section id="new">
+<div class="card"><h2>Trade details</h2><div class="grid">
+<div><label>Date (automatic)</label><input id="date" readonly></div><div><label>Time (automatic)</label><input id="time" readonly></div>
+<div><label>Pair / Instrument</label><input id="pair" placeholder="EURUSD, XAUUSD, BTCUSD"></div>
+<div><label>Session</label><select id="session"><option>London</option><option>New York</option><option>Overlap</option><option>Asia</option><option>Other</option></select></div>
+<div><label>Direction</label><select id="direction"><option>Buy</option><option>Sell</option></select></div>
+<div><label>Order type</label><select id="order"><option>Market</option><option>Buy Limit</option><option>Sell Limit</option><option>Buy Stop</option><option>Sell Stop</option></select></div>
+</div></div>
+<div class="card"><h2>📰 News checklist</h2>
+<div id="newsRows"></div>
+<div style="margin-top:12px"><label>News decision</label><select id="newsDecision"><option>Trade</option><option>Wait</option><option>Skip</option></select></div></div>
+<div class="card"><h2>📈 Technical checklist</h2><div id="techRows"></div>
+<div style="margin-top:12px"><label>HTF direction (optional)</label><select id="bias"><option>Choose…</option><option>Bullish</option><option>Bearish</option><option>Range / unclear</option></select></div></div>
+<div class="card"><h2>Entry & risk</h2><div class="grid">
+<div><label>Entry</label><input id="entry" type="number" step="any" placeholder="Price"></div><div><label>Stop Loss</label><input id="sl" type="number" step="any"></div>
+<div><label>Take Profit</label><input id="tp" type="number" step="any"></div><div><label>Risk (%)</label><input id="risk" type="number" step="any" placeholder="e.g. 1"></div>
+<div><label>Planned RR (e.g. 1:2)</label><input id="rr" placeholder="1:2"></div><div><label>Result</label><select id="result"><option>Open</option><option>Win</option><option>Loss</option><option>BE</option><option>Cancelled</option></select></div>
+<div><label>P/L (money)</label><input id="pl" type="number" step="any" placeholder="+ or −"></div></div>
+<div style="margin-top:12px"><label>Notes / chart link</label><textarea id="notes" placeholder="Why this trade? Lesson? TradingView screenshot link…"></textarea></div></div>
+<div class="actions"><button class="primary" id="save">Save Trade</button><button class="secondary" id="clear">Clear</button></div>
+<p class="small">Saved locally on this device/browser. Export a backup regularly from History.</p>
+</section>
+<section id="history" class="hidden"><div class="card"><h2>Trade records</h2><p class="small">Tap a record to view or delete it. Records stay here until you delete them or clear browser data.</p><div class="actions"><button class="secondary" id="export">Export backup (JSON)</button><label class="secondary" style="text-align:center;cursor:pointer">Import backup<input type="file" id="import" accept=".json" style="display:none"></label></div></div><div id="records"></div></section>
+<section id="summary" class="hidden"><div class="card"><h2>Performance summary</h2><div class="statgrid" id="stats"></div></div><div class="card"><h2>What do these mean?</h2><p><b>P/L:</b> Profit or Loss—the money gained (+) or lost (−).</p><br><p><b>HTF bias:</b> Higher Time Frame direction, e.g. H4/D1 bullish or bearish.</p><br><p><b>RR:</b> Risk-to-Reward. 1:2 means risking 1 unit to target 2.</p></div></section>
+</main>
+<script>
+const news=["Economic calendar checked?","High-impact news within 60 minutes?","News time checked (Nigeria/WAT)?","Forecast & previous reviewed?"];
+const tech=["HTF bias clear?","Liquidity sweep?","Displacement?","BOS/MSS confirmed?","FVG present?"];
+const answers={};
+function renderChecks(id,items,prefix){document.getElementById(id).innerHTML=items.map((x,i)=>`<div class="checkrow"><span>${x}</span><div class="pills">${["Yes","No","N/A"].map(v=>`<button type="button" data-key="${prefix}${i}" data-v="${v}">${v}</button>`).join("")}</div></div>`).join("")}
+renderChecks("newsRows",news,"n");renderChecks("techRows",tech,"t");
+document.addEventListener("click",e=>{if(e.target.matches(".pills button")){let k=e.target.dataset.key;answers[k]=e.target.dataset.v;document.querySelectorAll(`[data-key="${k}"]`).forEach(b=>b.classList.toggle("sel",b===e.target));}});
+function stamp(){let d=new Date();document.getElementById("date").value=d.toLocaleDateString();document.getElementById("time").value=d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});}
+stamp();
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));["new","history","summary"].forEach(id=>document.getElementById(id).classList.toggle("hidden",id!==b.dataset.tab));if(b.dataset.tab==="history")showHistory();if(b.dataset.tab==="summary")showSummary();});
+const get=id=>document.getElementById(id).value;
+const set=id,v=>document.getElementById(id).value=v;
+function records(){return JSON.parse(localStorage.getItem("tradeJournalRecords")||"[]")}
+function saveRecords(a){localStorage.setItem("tradeJournalRecords",JSON.stringify(a))}
+function formData(){return {id:Date.now(),date:new Date().toLocaleDateString(),time:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}),pair:get("pair").trim().toUpperCase(),session:get("session"),direction:get("direction"),order:get("order"),news:news.map((_,i)=>answers["n"+i]||"—"),newsDecision:get("newsDecision"),tech:tech.map((_,i)=>answers["t"+i]||"—"),bias:get("bias"),entry:get("entry"),sl:get("sl"),tp:get("tp"),risk:get("risk"),rr:get("rr"),result:get("result"),pl:get("pl"),notes:get("notes")}}
+document.getElementById("save").onclick=()=>{let x=formData();if(!x.pair){alert("Please enter the pair/instrument first.");return}let a=records();a.unshift(x);saveRecords(a);alert("Trade saved! Record #"+a.length);clearForm();};
+function clearForm(){["pair","entry","sl","tp","risk","rr","pl","notes"].forEach(x=>set(x,""));set("result","Open");set("bias","Choose…");set("newsDecision","Trade");Object.keys(answers).forEach(k=>delete answers[k]);document.querySelectorAll(".pills button").forEach(b=>b.classList.remove("sel"));stamp();}
+document.getElementById("clear").onclick=clearForm;
+function showHistory(){let a=records();document.getElementById("records").innerHTML=a.length?a.map((x,i)=>`<div class="record"><div class="recordtop"><div><h3>#${a.length-i} · ${x.pair} ${x.direction}</h3><p>${x.date} ${x.time} · ${x.session} · ${x.result} · P/L ${x.pl||"—"}</p></div><span>${x.rr||""}</span></div><p>News: ${x.newsDecision} · HTF: ${x.bias||"—"} · Sweep ${x.tech[1]} · BOS ${x.tech[3]} · FVG ${x.tech[4]}</p><p>${(x.notes||"").replaceAll("<","&lt;")}</p><button class="danger" onclick="del(${x.id})">Delete record</button></div>`).join(""):`<div class="empty">No trades recorded yet. Add your first trade!</div>`}
+function del(id){if(confirm("Delete this trade record?")){saveRecords(records().filter(x=>x.id!==id));showHistory();}}
+function showSummary(){let a=records(),closed=a.filter(x=>["Win","Loss"].includes(x.result)),wins=a.filter(x=>x.result==="Win").length,loss=a.filter(x=>x.result==="Loss").length,pl=a.reduce((s,x)=>s+(Number(x.pl)||0),0),open=a.filter(x=>x.result==="Open").length;let stats=[["Total records",a.length],["Wins",wins],["Losses",loss],["Win rate",closed.length?(wins/closed.length*100).toFixed(1)+"%":"—"],["Total P/L",pl],["Open",open]];document.getElementById("stats").innerHTML=stats.map(s=>`<div class="stat"><span class="small">${s[0]}</span><b>${s[1]}</b></div>`).join("")}
+document.getElementById("export").onclick=()=>{let blob=new Blob([JSON.stringify(records(),null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="trade-journal-backup.json";a.click();URL.revokeObjectURL(url)};
+document.getElementById("import").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let a=JSON.parse(r.result);if(Array.isArray(a)){saveRecords(a);showHistory();alert("Backup imported.")}}catch{alert("Invalid backup file.")}};r.readAsText(f)};
+</script>
+</body></html>
